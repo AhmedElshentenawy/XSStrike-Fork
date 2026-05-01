@@ -1,5 +1,6 @@
 import base64 as b64
 import re
+from urllib.parse import quote, unquote
 
 
 def base64(string):
@@ -7,3 +8,10 @@ def base64(string):
         return b64.b64decode(string.encode('utf-8')).decode('utf-8')
     else:
         return b64.b64encode(string.encode('utf-8')).decode('utf-8')
+
+
+def url(string):
+    decoded = unquote(string)
+    if decoded != string:
+        return decoded
+    return quote(string, safe='~')

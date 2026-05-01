@@ -13,7 +13,7 @@ from core.log import setup_logger
 logger = setup_logger(__name__)
 
 
-def singleFuzz(target, paramData, encoding, headers, delay, timeout):
+def singleFuzz(target, paramData, encoding, headers, delay, timeout, encoding_fallback=False):
     GET, POST = (False, True) if paramData else (True, False)
     # If the user hasn't supplied the root url with http(s), we will handle it
     if not target.startswith('http'):
@@ -46,4 +46,4 @@ def singleFuzz(target, paramData, encoding, headers, delay, timeout):
         paramsCopy = copy.deepcopy(params)
         paramsCopy[paramName] = xsschecker
         fuzzer(url, paramsCopy, headers, GET,
-               delay, timeout, WAF, encoding)
+               delay, timeout, WAF, encoding, encoding_fallback)

@@ -19,7 +19,7 @@ from core.log import setup_logger
 logger = setup_logger(__name__)
 
 
-def scan(target, paramData, encoding, headers, delay, timeout, skipDOM, skip):
+def scan(target, paramData, encoding, headers, delay, timeout, skipDOM, skip, encoding_fallback=False):
     GET, POST = (False, True) if paramData else (True, False)
     # If the user hasn't supplied the root url with http(s), we will handle it
     if not target.startswith('http'):
@@ -77,7 +77,7 @@ def scan(target, paramData, encoding, headers, delay, timeout, skipDOM, skip):
 
         logger.run('Analysing reflections')
         efficiencies = filterChecker(
-            url, paramsCopy, headers, GET, delay, occurences, timeout, encoding)
+            url, paramsCopy, headers, GET, delay, occurences, timeout, encoding, encoding_fallback)
         logger.debug('Scan efficiencies: {}'.format(efficiencies))
         logger.run('Generating payloads')
         vectors = generator(occurences, response.text)
@@ -99,7 +99,7 @@ def scan(target, paramData, encoding, headers, delay, timeout, skipDOM, skip):
                 if not GET:
                     vect = unquote(vect)
                 efficiencies = checker(
-                    url, paramsCopy, headers, GET, delay, vect, positions, timeout, encoding)
+                    url, paramsCopy, headers, GET, delay, vect, positions, timeout, encoding, encoding_fallback)
                 if not efficiencies:
                     for i in range(len(occurences)):
                         efficiencies.append(0)

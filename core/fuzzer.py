@@ -13,18 +13,23 @@ from core.log import setup_logger
 logger = setup_logger(__name__)
 
 
-def fuzzer(url, params, headers, GET, delay, timeout, WAF, encoding):
+def fuzzer(url, params, headers, GET, delay, timeout, WAF, encoding, encoding_fallback=False):
     for fuzz in fuzzes:
         if delay == 0:
             delay = 0
         t = delay + randint(delay, delay * 2) + counter(fuzz)
         sleep(t)
+        raw_fuzz = fuzz
+        encoded_fuzz = encoding(unquote(raw_fuzz)) if encoding else raw_fuzz
+        payload = encoded_fuzz if encoding and not encoding_fallback else raw_fuzz
         try:
-            if encoding:
-                fuzz = encoding(unquote(fuzz))
-            data = replaceValue(params, xsschecker, fuzz, copy.deepcopy)
+            data = replaceValue(params, xsschecker, payload, copy.deepcopy)
             response = requester(url, data, headers, GET, delay/2, timeout)
-        except (requests.RequestException, Exception) as e:
+            if encoding and encoding_fallback and raw_fuzz.lower() not in response.text.lower() and encoded_fuzz.lower() not in response.text.lower():
+                payload = encoded_fuzz
+                data = replaceValue(params, xsschecker, payload, copy.deepcopy)
+                response = requester(url, data, headers, GET, delay/2, timeout)
+        except requests.RequestException as e:
             logger.error('WAF is dropping suspicious requests.')
             logger.debug('Error details: {}'.format(str(e)))
             if delay == 0:
@@ -40,17 +45,16 @@ def fuzzer(url, params, headers, GET, delay, timeout, WAF, encoding):
                 requester(url, params, headers, GET, 0, 10)
                 logger.good('Pheww! Looks like sleeping for %s%i%s seconds worked!' % (
                     green, ((delay + 1) * 2), end))
-            except (requests.RequestException, Exception) as e:
+            except requests.RequestException as e:
                 logger.error('\nLooks like WAF has blocked our IP Address. Sorry!')
                 logger.debug('Error details: {}'.format(str(e)))
                 break
-        if encoding:
-            fuzz = encoding(fuzz)
-        if fuzz.lower() in response.text.lower():  # if fuzz string is reflected in the response
+        display_fuzz = raw_fuzz if payload == raw_fuzz else (encoding(payload) if encoding else payload)
+        if payload.lower() in response.text.lower():  # if fuzz string is reflected in the response
             result = ('%s[passed]  %s' % (green, end))
         # if the server returned an error (Maybe WAF blocked it)
         elif str(response.status_code)[:1] != '2':
             result = ('%s[blocked] %s' % (red, end))
         else:  # if the fuzz string was not reflected in the response completely
             result = ('%s[filtered]%s' % (yellow, end))
-        logger.info('%s %s' % (result, fuzz))
+        logger.info('%s %s' % (result, display_fuzz))
