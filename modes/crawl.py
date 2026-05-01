@@ -13,7 +13,7 @@ from core.log import setup_logger
 logger = setup_logger(__name__)
 
 
-def crawl(scheme, host, main_url, form, blindXSS, blindPayload, headers, delay, timeout, encoding):
+def crawl(scheme, host, main_url, form, blindXSS, blindPayload, headers, delay, timeout, encoding, encoding_fallback=False):
     if form:
         for each in form.values():
             url = each['action']
@@ -44,7 +44,7 @@ def crawl(scheme, host, main_url, form, blindXSS, blindPayload, headers, delay, 
                             occurences = htmlParser(response, encoding)
                             positions = occurences.keys()
                             occurences = filterChecker(
-                                url, paramsCopy, headers, GET, delay, occurences, timeout, encoding)
+                                url, paramsCopy, headers, GET, delay, occurences, timeout, encoding, core.config.globalVariables.get('encode_fallback', False))
                             vectors = generator(occurences, response.text)
                             if vectors:
                                 for confidence, vects in vectors.items():

@@ -40,7 +40,10 @@ import core.log
 parser = argparse.ArgumentParser()
 parser.add_argument('-u', '--url', help='url', dest='target')
 parser.add_argument('--data', help='post data', dest='paramData')
-parser.add_argument('-e', '--encode', help='encode payloads', dest='encode')
+parser.add_argument('-e', '--encode', help='encode payloads (url or base64, default: url)',
+                    dest='encode', choices=['url', 'base64'], default='url')
+parser.add_argument('--encode-fallback', help='retry failed payloads with the selected encoding',
+                    dest='encode_fallback', action='store_true')
 parser.add_argument('--fuzzer', help='fuzzer',
                     dest='fuzz', action='store_true')
 parser.add_argument('--update', help='update',
@@ -152,7 +155,14 @@ seedList = []
 if args_seeds:
     seedList = list(filter(None, reader(args_seeds)))
 
-encoding = base64 if encode and encode == 'base64' else False
+if encode == 'base64':
+    encoding = base64
+else:
+    from core.encoders import url
+
+    encoding = url
+
+encoding_fallback = args.encode_fallback
 
 if not proxy:
     core.config.proxies = {}
@@ -166,12 +176,12 @@ if not target and not args_seeds:  # if the user hasn't supplied a url
     quit()
 
 if fuzz:
-    singleFuzz(target, paramData, encoding, headers, delay, timeout)
+    singleFuzz(target, paramData, encoding, headers, delay, timeout, encoding_fallback)
 elif not recursive and not args_seeds:
     if args_file:
-        bruteforcer(target, paramData, payloadList, encoding, headers, delay, timeout)
+        bruteforcer(target, paramData, payloadList, encoding, headers, delay, timeout, encoding_fallback)
     else:
-        scan(target, paramData, encoding, headers, delay, timeout, skipDOM, skip)
+        scan(target, paramData, encoding, headers, delay, timeout, skipDOM, skip, encoding_fallback)
 else:
     if target:
         seedList.append(target)
@@ -194,7 +204,7 @@ else:
                 domURLs.append(0)
         threadpool = concurrent.futures.ThreadPoolExecutor(max_workers=threadCount)
         futures = (threadpool.submit(crawl, scheme, host, main_url, form,
-                                     blindXSS, blindPayload, headers, delay, timeout, encoding) for form, domURL in zip(forms, domURLs))
+                                     blindXSS, blindPayload, headers, delay, timeout, encoding, encoding_fallback) for form, domURL in zip(forms, domURLs))
         for i, _ in enumerate(concurrent.futures.as_completed(futures)):
             if i + 1 == len(forms) or (i + 1) % threadCount == 0:
                 logger.info('Progress: %i/%i\r' % (i + 1, len(forms)))
