@@ -1,4 +1,5 @@
 import copy
+import requests
 from urllib.parse import urlparse
 
 from core.colors import green, end
@@ -20,7 +21,8 @@ def singleFuzz(target, paramData, encoding, headers, delay, timeout):
             response = requester('https://' + target, {},
                                  headers, GET, delay, timeout)
             target = 'https://' + target
-        except:
+        except (requests.RequestException, Exception) as e:
+            logger.debug('HTTPS connection failed: {}'.format(str(e)))
             target = 'http://' + target
     logger.debug('Single Fuzz target: {}'.format(target))
     host = urlparse(target).netloc  # Extracts host out of the url

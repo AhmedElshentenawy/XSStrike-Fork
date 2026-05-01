@@ -43,10 +43,21 @@ def requester(url, data, headers, GET, delay, timeout):
             response = requests.post(url, data=data, headers=headers,
                                      timeout=timeout, verify=False, proxies=core.config.proxies)
         return response
-    except ProtocolError:
+    except ProtocolError as e:
         logger.warning('WAF is dropping suspicious requests.')
         logger.warning('Scanning will continue after 10 minutes.')
+        logger.debug('ProtocolError: {}'.format(str(e)))
         time.sleep(600)
-    except Exception as e:
+        return requests.Response()
+    except requests.Timeout as e:
+        logger.warning('Request timeout. Target may be unresponsive.')
+        logger.debug('Timeout error: {}'.format(str(e)))
+        return requests.Response()
+    except requests.ConnectionError as e:
         logger.warning('Unable to connect to the target.')
+        logger.debug('Connection error: {}'.format(str(e)))
+        return requests.Response()
+    except requests.RequestException as e:
+        logger.warning('Unable to connect to the target.')
+        logger.debug('Request error: {}'.format(str(e)))
         return requests.Response()

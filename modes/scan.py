@@ -1,5 +1,6 @@
 import copy
 import re
+import requests
 from urllib.parse import urlparse, quote, unquote
 
 from core.checker import checker
@@ -26,7 +27,8 @@ def scan(target, paramData, encoding, headers, delay, timeout, skipDOM, skip):
             response = requester('https://' + target, {},
                                  headers, GET, delay, timeout)
             target = 'https://' + target
-        except:
+        except (requests.RequestException, Exception) as e:
+            logger.debug('HTTPS connection failed: {}'.format(str(e)))
             target = 'http://' + target
     logger.debug('Scan target: {}'.format(target))
     response = requester(target, {}, headers, GET, delay, timeout).text
