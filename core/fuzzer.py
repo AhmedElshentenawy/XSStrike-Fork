@@ -1,4 +1,5 @@
 import copy
+import requests
 from random import randint
 from time import sleep
 from urllib.parse import unquote
@@ -23,8 +24,9 @@ def fuzzer(url, params, headers, GET, delay, timeout, WAF, encoding):
                 fuzz = encoding(unquote(fuzz))
             data = replaceValue(params, xsschecker, fuzz, copy.deepcopy)
             response = requester(url, data, headers, GET, delay/2, timeout)
-        except:
+        except (requests.RequestException, Exception) as e:
             logger.error('WAF is dropping suspicious requests.')
+            logger.debug('Error details: {}'.format(str(e)))
             if delay == 0:
                 logger.info('Delay has been increased to %s6%s seconds.' % (green, end))
                 delay += 6
@@ -38,8 +40,9 @@ def fuzzer(url, params, headers, GET, delay, timeout, WAF, encoding):
                 requester(url, params, headers, GET, 0, 10)
                 logger.good('Pheww! Looks like sleeping for %s%i%s seconds worked!' % (
                     green, ((delay + 1) * 2), end))
-            except:
+            except (requests.RequestException, Exception) as e:
                 logger.error('\nLooks like WAF has blocked our IP Address. Sorry!')
+                logger.debug('Error details: {}'.format(str(e)))
                 break
         if encoding:
             fuzz = encoding(fuzz)

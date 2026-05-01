@@ -44,6 +44,8 @@ def _replacement_match(regex, data):
         regex = deJSON(regex)
         group_parts_of_regex = r'^\/(.*[^\\])\/([^\/]+)\/$'
         ar = re.search(group_parts_of_regex, regex)
+        if ar is None:
+            return None
         search_for_regex = "(" + ar.group(1) + ")"
         match = re.search(search_for_regex, data)
         ver = None
@@ -52,7 +54,7 @@ def _replacement_match(regex, data):
             return ver
 
         return None
-    except:
+    except (AttributeError, IndexError, TypeError) as e:
         return None
 
 
