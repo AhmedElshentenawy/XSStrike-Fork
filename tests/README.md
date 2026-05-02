@@ -1,4 +1,4 @@
-# XSStrike Test Suite Quick Start
+# XSSniper Test Suite Quick Start
 
 ## What's Being Tested?
 
@@ -162,7 +162,7 @@ Target: **80%+ coverage** for graded code
 ### ImportError: No module named 'core'
 Make sure you're running pytest from the project root:
 ```bash
-cd /home/shent/projects/XSStrike-Fork
+cd /home/shent/projects/XSSniper-Fork
 pytest tests/
 ```
 
@@ -187,7 +187,7 @@ pytest tests/ -n auto  # Use all CPU cores
 ## File Structure
 
 ```
-XSStrike-Fork/
+XSSniper-Fork/
 ├── tests/
 │   ├── __init__.py
 │   ├── conftest.py              # Pytest configuration & fixtures

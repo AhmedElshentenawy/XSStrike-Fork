@@ -1,8 +1,8 @@
-# XSStrike Comprehensive Test Suite Documentation
+# XSSniper Comprehensive Test Suite Documentation
 
 ## Overview
 
-This test suite provides **comprehensive coverage** of XSStrike's core functionality, with a focus on **encoding support and fallback mechanisms** that were recently added.
+This test suite provides **comprehensive coverage** of XSSniper's core functionality, with a focus on **encoding support and fallback mechanisms** that were recently added.
 
 **Total Tests**: 50+ test cases across 6 test modules  
 **Coverage Areas**: Encoding, Payload Detection, Fuzzing, Payload Generation, Bruteforcing
@@ -195,7 +195,7 @@ Tests payload generation output structure.
 
 #### **Class: TestGeneratorContextAwareness** ⭐
 
-Tests **context-aware payload generation** (core XSStrike feature).
+Tests **context-aware payload generation** (core XSSniper feature).
 
 | Test Name | What It Verifies | Context |
 |---|---|---|
@@ -203,7 +203,7 @@ Tests **context-aware payload generation** (core XSStrike feature).
 | `test_attribute_context_payloads` | Generates quote-breaking payloads | `<img src="injection">` |
 | `test_script_context_payloads` | Generates JS-breaking payloads | `<script>var x='injection'</script>` |
 
-**Why Important**: XSStrike's **main advantage**—generates payloads specifically for detected context.
+**Why Important**: XSSniper's **main advantage**—generates payloads specifically for detected context.
 
 #### **Class: TestGeneratorQuoteHandling**
 

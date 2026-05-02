@@ -25,7 +25,7 @@ class TestConfigLoaderBasics:
     def test_config_loader_without_path(self):
         """Test: ConfigLoader finds existing config file"""
         loader = ConfigLoader()
-        # Will try to find xsstrike.yaml in current directory
+        # Will try to find xssniper.yaml in current directory
         assert loader.config_path is None or loader.config_path.endswith(('.yaml', '.yml', '.json'))
     
     def test_get_defaults(self):

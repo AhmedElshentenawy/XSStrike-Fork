@@ -12,7 +12,7 @@ if checkplatform.startswith("Windows-10") and int(platform.version().split(".")[
     colors = True
     os.system('')   # Enables the ANSI
 if not colors:
-    end: str = red = white = green = yellow = run = bad = good = info = que = ''
+    end = red = white = green = yellow = run = bad = good = info = que = ''
 else:
     white: str = '\033[97m'
     green: str = '\033[92m'

@@ -1,7 +1,7 @@
 """
-XSStrike Test Suite
+XSSniper Test Suite
 
-This package contains comprehensive unit and integration tests for the XSStrike XSS detection tool.
+This package contains comprehensive unit and integration tests for the XSSniper XSS detection tool.
 
 Test Structure:
 - conftest.py: Pytest configuration and shared fixtures

@@ -7,7 +7,7 @@ __all__ = ['setup_logger', 'console_log_level', 'file_log_level', 'log_file']
 
 console_log_level: str = 'INFO'
 file_log_level: Optional[str] = None
-log_file: str = 'xsstrike.log'
+log_file: str = 'xssniper.log'
 
 """
 Default Logging Levels
@@ -21,11 +21,13 @@ DEBUG = 10
 VULN_LEVEL_NUM: int = 60
 RUN_LEVEL_NUM: int = 22
 GOOD_LEVEL_NUM: int = 25
+PROGRESS_LEVEL_NUM: int = 21
 
 
 logging.addLevelName(VULN_LEVEL_NUM, 'VULN')
 logging.addLevelName(RUN_LEVEL_NUM, 'RUN')
 logging.addLevelName(GOOD_LEVEL_NUM, 'GOOD')
+logging.addLevelName(PROGRESS_LEVEL_NUM, 'PROGRESS')
 
 
 def _vuln(self, msg: str, *args, **kwargs) -> None:
@@ -43,9 +45,15 @@ def _good(self, msg: str, *args, **kwargs) -> None:
         self._log(GOOD_LEVEL_NUM, msg, args, **kwargs)
 
 
+def _progress(self, msg: str, *args, **kwargs) -> None:
+    if self.isEnabledFor(PROGRESS_LEVEL_NUM):
+        self._log(PROGRESS_LEVEL_NUM, msg, args, **kwargs)
+
+
 logging.Logger.vuln = _vuln
 logging.Logger.run = _run
 logging.Logger.good = _good
+logging.Logger.progress = _progress
 
 
 log_config: Dict[str, Dict[str, Any]] = {
@@ -56,6 +64,10 @@ log_config: Dict[str, Dict[str, Any]] = {
     'INFO': {
         'value': logging.INFO,
         'prefix': info,
+    },
+    'PROGRESS': {
+        'value': PROGRESS_LEVEL_NUM,
+        'prefix': '{}[~]{}'.format(green, end),
     },
     'RUN': {
         'value': RUN_LEVEL_NUM,
@@ -157,7 +169,7 @@ def log_debug_json(self, msg: str = '', data: Any = {}) -> None:
             self.debug('{} {}'.format(msg, data))
 
 
-def setup_logger(name: str = 'xsstrike') -> logging.Logger:
+def setup_logger(name: str = 'xssniper') -> logging.Logger:
     from types import MethodType
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
