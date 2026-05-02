@@ -1,10 +1,11 @@
 import sys
 import os
 import platform
+from typing import Any
 
-colors = True  # Output should be colored
-machine = sys.platform  # Detecting the os of current system
-checkplatform = platform.platform() # Get current version of OS
+colors: bool = True  # Output should be colored
+machine: str = sys.platform  # Detecting the os of current system
+checkplatform: str = platform.platform() # Get current version of OS
 if machine.lower().startswith(('os', 'win', 'darwin', 'ios')):
     colors = False  # Colors shouldn't be displayed on mac & windows
 if checkplatform.startswith("Windows-10") and int(platform.version().split(".")[2]) >= 10586:
@@ -13,14 +14,14 @@ if checkplatform.startswith("Windows-10") and int(platform.version().split(".")[
 if not colors:
     end = red = white = green = yellow = run = bad = good = info = que = ''
 else:
-    white = '\033[97m'
-    green = '\033[92m'
-    red = '\033[91m'
-    yellow = '\033[93m'
-    end = '\033[0m'
-    back = '\033[7;91m'
-    info = '\033[93m[!]\033[0m'
-    que = '\033[94m[?]\033[0m'
-    bad = '\033[91m[-]\033[0m'
-    good = '\033[92m[+]\033[0m'
-    run = '\033[97m[~]\033[0m'
+    white: str = '\033[97m'
+    green: str = '\033[92m'
+    red: str = '\033[91m'
+    yellow: str = '\033[93m'
+    end: str = '\033[0m'
+    back: str = '\033[7;91m'
+    info: str = '\033[93m[!]\033[0m'
+    que: str = '\033[94m[?]\033[0m'
+    bad: str = '\033[91m[-]\033[0m'
+    good: str = '\033[92m[+]\033[0m'
+    run: str = '\033[97m[~]\033[0m'

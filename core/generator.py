@@ -1,15 +1,21 @@
 from core.config import xsschecker, badTags, fillings, eFillings, lFillings, jFillings, eventHandlers, tags, functions
 from core.jsContexter import jsContexter
 from core.utils import randomUpper as r, genGen, extractScripts
+from core.log import setup_logger
+
+logger = setup_logger(__name__)
 
 
 def generator(occurences, response):
+    logger.progress("Extracting JavaScript from response...")
     scripts = extractScripts(response)
     index = 0
     vectors = {11: set(), 10: set(), 9: set(), 8: set(), 7: set(),
                6: set(), 5: set(), 4: set(), 3: set(), 2: set(), 1: set()}
+    logger.progress("Analyzing injection contexts and generating payloads...")
     for i in occurences:
         context = occurences[i]['context']
+        logger.progress("Generating payloads for {} context...".format(context))
         if context == 'html':
             lessBracketEfficiency = occurences[i]['score']['<']
             greatBracketEfficiency = occurences[i]['score']['>']

@@ -1,15 +1,14 @@
-import copy
-from fuzzywuzzy import fuzz
-import re
-from urllib.parse import unquote
-
 from core.config import xsschecker
 from core.requester import requester
 from core.utils import replaceValue, fillHoles
+from core.log import setup_logger
+
+logger = setup_logger(__name__)
 
 
-def checker(url, params, headers, GET, delay, payload, positions, timeout, encoding, encoding_fallback=False):
+def checker(url: str, params: Dict[str, str], headers: Dict[str, str], GET: bool, delay: int, payload: str, positions: List[int], timeout: int, encoding: Callable[[str], str], encoding_fallback: bool = False) -> List[int]:
     def run_check(use_encoding):
+        logger.progress("Testing payload with {} encoding...".format("enabled" if use_encoding else "disabled"))
         checkString = 'st4r7s' + payload + '3nd'
         if use_encoding and encoding:
             checkString = encoding(unquote(checkString))

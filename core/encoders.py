@@ -1,16 +1,17 @@
 import base64 as b64
 import re
+from typing import Any
 from urllib.parse import quote, unquote
 
 
-def base64(string):
+def base64(string: str) -> str:
     if re.match(r'^[A-Za-z0-9+\/=]+$', string) and (len(string) % 4) == 0:
         return b64.b64decode(string.encode('utf-8')).decode('utf-8')
     else:
         return b64.b64encode(string.encode('utf-8')).decode('utf-8')
 
 
-def url(string):
+def url(string: str) -> str:
     decoded = unquote(string)
     if decoded != string:
         return decoded

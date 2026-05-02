@@ -1,0 +1,56 @@
+# XSSniper Configuration File
+# This file allows you to set default values for XSSniper without modifying code
+# Copy this file to your directory and modify as needed
+
+# Request Settings
+request:
+  # Delay between requests in seconds (float)
+  delay: 0
+  
+  # Request timeout in seconds
+  timeout: 10
+  
+  # HTTP User-Agent header (leave empty for random)
+  user_agent: ""
+  
+  # Proxy settings (format: http://ip:port or socks5://ip:port)
+  proxy: null
+
+# Scanning Settings
+scanning:
+  # Encoding method: 'url' or 'base64'
+  encode: 'url'
+  
+  # Enable encoding fallback (retry with encoding if initial request fails)
+  encode_fallback: false
+  
+  # Minimum efficiency required for a payload (0-100)
+  min_efficiency: 0
+  
+  # Skip DOM vulnerability scanning
+  skip_dom: false
+  
+  # Skip WAF detection
+  skip_waf: false
+
+# Output Settings
+output:
+  # Log level: 'debug', 'info', 'warning', 'error'
+  log_level: 'info'
+  
+  # Output format: 'text' or 'json'
+  log_format: 'text'
+  
+  # Save results to file (leave empty to skip)
+  output_file: null
+
+# Advanced Settings
+advanced:
+  # Number of threads for crawling (default: 2)
+  threads: 2
+  
+  # Maximum crawling depth
+  crawl_depth: 2
+  
+  # Maximum number of links to crawl
+  crawl_limit: 100

@@ -1,11 +1,13 @@
 import logging
+import sys
+from typing import Dict, Any, Optional
 from .colors import *
 
 __all__ = ['setup_logger', 'console_log_level', 'file_log_level', 'log_file']
 
-console_log_level = 'INFO'
-file_log_level = None
-log_file = 'xsstrike.log'
+console_log_level: str = 'INFO'
+file_log_level: Optional[str] = None
+log_file: str = 'xssniper.log'
 
 """
 Default Logging Levels
@@ -16,37 +18,45 @@ INFO = 20
 DEBUG = 10
 """
 
-VULN_LEVEL_NUM = 60
-RUN_LEVEL_NUM = 22
-GOOD_LEVEL_NUM = 25
+VULN_LEVEL_NUM: int = 60
+RUN_LEVEL_NUM: int = 22
+GOOD_LEVEL_NUM: int = 25
+PROGRESS_LEVEL_NUM: int = 21
 
 
 logging.addLevelName(VULN_LEVEL_NUM, 'VULN')
 logging.addLevelName(RUN_LEVEL_NUM, 'RUN')
 logging.addLevelName(GOOD_LEVEL_NUM, 'GOOD')
+logging.addLevelName(PROGRESS_LEVEL_NUM, 'PROGRESS')
 
 
-def _vuln(self, msg, *args, **kwargs):
+def _vuln(self, msg: str, *args, **kwargs) -> None:
     if self.isEnabledFor(VULN_LEVEL_NUM):
         self._log(VULN_LEVEL_NUM, msg, args, **kwargs)
 
 
-def _run(self, msg, *args, **kwargs):
+def _run(self, msg: str, *args, **kwargs) -> None:
     if self.isEnabledFor(RUN_LEVEL_NUM):
         self._log(RUN_LEVEL_NUM, msg, args, **kwargs)
 
 
-def _good(self, msg, *args, **kwargs):
+def _good(self, msg: str, *args, **kwargs) -> None:
     if self.isEnabledFor(GOOD_LEVEL_NUM):
         self._log(GOOD_LEVEL_NUM, msg, args, **kwargs)
+
+
+def _progress(self, msg: str, *args, **kwargs) -> None:
+    if self.isEnabledFor(PROGRESS_LEVEL_NUM):
+        self._log(PROGRESS_LEVEL_NUM, msg, args, **kwargs)
 
 
 logging.Logger.vuln = _vuln
 logging.Logger.run = _run
 logging.Logger.good = _good
+logging.Logger.progress = _progress
 
 
-log_config = {
+log_config: Dict[str, Dict[str, Any]] = {
     'DEBUG': {
         'value': logging.DEBUG,
         'prefix': '{}[*]{}'.format(yellow, end),
@@ -54,6 +64,10 @@ log_config = {
     'INFO': {
         'value': logging.INFO,
         'prefix': info,
+    },
+    'PROGRESS': {
+        'value': PROGRESS_LEVEL_NUM,
+        'prefix': '{}[~]{}'.format(green, end),
     },
     'RUN': {
         'value': RUN_LEVEL_NUM,
@@ -83,7 +97,7 @@ log_config = {
 
 
 class CustomFormatter(logging.Formatter):
-    def format(self, record):
+    def format(self, record: logging.LogRecord) -> str:
         msg = super().format(record)
         if record.levelname in log_config.keys():
             msg = '%s %s %s' % (log_config[record.levelname]['prefix'], msg, end)
@@ -91,9 +105,9 @@ class CustomFormatter(logging.Formatter):
 
 
 class CustomStreamHandler(logging.StreamHandler):
-    default_terminator = '\n'
+    default_terminator: str = '\n'
 
-    def emit(self, record):
+    def emit(self, record: logging.LogRecord) -> None:
         """
         Overrides emit method to temporally update terminator character in case last log record character is '\r'
         :param record:
@@ -107,7 +121,7 @@ class CustomStreamHandler(logging.StreamHandler):
             super().emit(record)
 
 
-def _switch_to_no_format_loggers(self):
+def _switch_to_no_format_loggers(self) -> None:
     self.removeHandler(self.console_handler)
     self.addHandler(self.no_format_console_handler)
     if hasattr(self, 'file_handler') and hasattr(self, 'no_format_file_handler'):
@@ -115,7 +129,7 @@ def _switch_to_no_format_loggers(self):
         self.addHandler(self.no_format_file_handler)
 
 
-def _switch_to_default_loggers(self):
+def _switch_to_default_loggers(self) -> None:
     self.removeHandler(self.no_format_console_handler)
     self.addHandler(self.console_handler)
     if hasattr(self, 'file_handler') and hasattr(self, 'no_format_file_handler'):
@@ -123,7 +137,7 @@ def _switch_to_default_loggers(self):
         self.addHandler(self.file_handler)
 
 
-def _get_level_and_log(self, msg, level):
+def _get_level_and_log(self, msg: str, level: str) -> None:
     if level.upper() in log_config.keys():
         log_method = getattr(self, level.lower())
         log_method(msg)
@@ -131,19 +145,19 @@ def _get_level_and_log(self, msg, level):
         self.info(msg)
 
 
-def log_red_line(self, amount=60, level='INFO'):
+def log_red_line(self, amount: int = 60, level: str = 'INFO') -> None:
     _switch_to_no_format_loggers(self)
     _get_level_and_log(self, red + ('-' * amount) + end, level)
     _switch_to_default_loggers(self)
 
 
-def log_no_format(self, msg='', level='INFO'):
+def log_no_format(self, msg: str = '', level: str = 'INFO') -> None:
     _switch_to_no_format_loggers(self)
     _get_level_and_log(self, msg, level)
     _switch_to_default_loggers(self)
 
 
-def log_debug_json(self, msg='', data={}):
+def log_debug_json(self, msg: str = '', data: Any = {}) -> None:
     if self.isEnabledFor(logging.DEBUG):
         if isinstance(data, dict):
             import json
@@ -155,7 +169,7 @@ def log_debug_json(self, msg='', data={}):
             self.debug('{} {}'.format(msg, data))
 
 
-def setup_logger(name='xsstrike'):
+def setup_logger(name: str = 'xssniper') -> logging.Logger:
     from types import MethodType
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
