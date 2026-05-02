@@ -11,13 +11,14 @@ Usage:
 import os
 import json
 from pathlib import Path
+from typing import Optional, Dict, Any
 from core.log import setup_logger
 
 logger = setup_logger(__name__)
 
 try:
     import yaml
-    YAML_AVAILABLE = True
+    YAML_AVAILABLE: bool = True
 except ImportError:
     YAML_AVAILABLE = False
 
@@ -25,17 +26,17 @@ except ImportError:
 class ConfigLoader:
     """Load and manage configuration from external files."""
     
-    def __init__(self, config_path=None):
+    def __init__(self, config_path: Optional[str] = None) -> None:
         """
         Initialize config loader.
         
         Args:
             config_path (str): Path to config file. If None, uses 'xsstrike.yaml' or 'xsstrike.json'
         """
-        self.config_path = config_path or self._find_config_file()
-        self.config = {}
+        self.config_path: Optional[str] = config_path or self._find_config_file()
+        self.config: Dict[str, Any] = {}
     
-    def _find_config_file(self):
+    def _find_config_file(self) -> Optional[str]:
         """Find config file in current directory or home directory."""
         # Check current directory first
         for filename in ['xsstrike.yaml', 'xsstrike.yml', 'xsstrike.json']:
@@ -51,7 +52,12 @@ class ConfigLoader:
         
         return None
     
-    def load(self):
+    def validate(self) -> None:
+        """Validate that config file exists and is readable."""
+        if self.config_path and not os.path.exists(self.config_path):
+            raise FileNotFoundError(f"Config file not found: {self.config_path}")
+    
+    def load(self) -> Dict[str, Any]:
         """
         Load configuration from file.
         
@@ -76,7 +82,7 @@ class ConfigLoader:
             logger.info('Using default configuration.')
             return self._get_defaults()
     
-    def _load_yaml(self):
+    def _load_yaml(self) -> Dict[str, Any]:
         """Load YAML configuration file."""
         if not YAML_AVAILABLE:
             logger.warning('PyYAML not installed. Install with: pip install pyyaml')
@@ -91,7 +97,7 @@ class ConfigLoader:
             logger.error(f'YAML parsing error: {e}')
             return self._get_defaults()
     
-    def _load_json(self):
+    def _load_json(self) -> Dict[str, Any]:
         """Load JSON configuration file."""
         try:
             with open(self.config_path, 'r') as f:
@@ -102,7 +108,7 @@ class ConfigLoader:
             logger.error(f'JSON parsing error: {e}')
             return self._get_defaults()
     
-    def _get_defaults(self):
+    def _get_defaults(self) -> Dict[str, Any]:
         """Get default configuration."""
         return {
             'request': {
@@ -130,7 +136,7 @@ class ConfigLoader:
             },
         }
     
-    def _merge_defaults(self, config):
+    def _merge_defaults(self, config: Dict[str, Any]) -> Dict[str, Any]:
         """
         Merge user config with defaults.
         
