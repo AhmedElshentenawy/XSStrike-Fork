@@ -2,7 +2,7 @@
 
 ## Overview
 
-Configuration File Support has been fully implemented for XSStrike, allowing users to set default values through external configuration files (YAML or JSON) instead of relying solely on command-line arguments.
+Configuration File Support has been fully implemented for XSSniper, allowing users to set default values through external configuration files (YAML or JSON) instead of relying solely on command-line arguments.
 
 ## Files Added/Modified
 
@@ -32,13 +32,13 @@ Configuration File Support has been fully implemented for XSStrike, allowing use
    - Common configurations
    - Quick validation
 
-5. **[xsstrike.yaml](xsstrike.yaml)** - Example configuration file
+5. **[xssniper.yaml](xssniper.yaml)** - Example configuration file
    - Well-commented template
    - All configuration options with defaults
    - Ready to copy and customize
 
 ### Modified Files
-1. **[xsstrike.py](xsstrike.py)** - Updated CLI entry point
+1. **[xssniper.py](xssniper.py)** - Updated CLI entry point
    - Added import: `from core.config_loader import ConfigLoader, apply_config_to_args`
    - Added `--config` flag for specifying config file path
    - Integrated config loading and argument merging after argument parsing
@@ -55,8 +55,8 @@ Configuration File Support has been fully implemented for XSStrike, allowing use
 
 ### 2. Configuration Discovery
 - ✅ Explicit path via `--config` flag
-- ✅ Auto-detect in current directory (`xsstrike.yaml`, `xsstrike.yml`, `xsstrike.json`)
-- ✅ Auto-detect in home directory (`~/.xsstrike/xsstrike.yaml`, etc.)
+- ✅ Auto-detect in current directory (`xssniper.yaml`, `xssniper.yml`, `xssniper.json`)
+- ✅ Auto-detect in home directory (`~/.xssniper/xssniper.yaml`, etc.)
 
 ### 3. Configuration Sections
 ```
@@ -100,7 +100,7 @@ ConfigLoader(config_path)
 
 ### Integration Point
 ```python
-# xsstrike.py flow:
+# xssniper.py flow:
 argparse → ConfigLoader.load() → apply_config_to_args() → Final args
   CLI args always take precedence over config file
 ```
@@ -122,7 +122,7 @@ All tests **passing** ✓
 ### Basic Usage
 ```bash
 # 1. Create config file
-cat > xsstrike.yaml << EOF
+cat > xssniper.yaml << EOF
 request:
   delay: 2
   timeout: 15
@@ -132,28 +132,28 @@ scanning:
   encode_fallback: true
 EOF
 
-# 2. Run XSStrike (auto-loads config)
-python3 xsstrike.py -u http://target.com
+# 2. Run XSSniper (auto-loads config)
+python3 xssniper.py -u http://target.com
 ```
 
 ### Custom Config Path
 ```bash
-python3 xsstrike.py -u http://target.com --config /etc/xsstrike/prod.yaml
+python3 xssniper.py -u http://target.com --config /etc/xssniper/prod.yaml
 ```
 
 ### Environment-Specific Configs
 ```bash
 # Development (aggressive)
-python3 xsstrike.py -u http://dev.local --config config-dev.yaml
+python3 xssniper.py -u http://dev.local --config config-dev.yaml
 
 # Production (conservative)
-python3 xsstrike.py -u http://prod.com --config config-prod.yaml
+python3 xssniper.py -u http://prod.com --config config-prod.yaml
 ```
 
 ### CLI Override
 ```bash
 # Config has delay=2, but override to delay=5
-python3 xsstrike.py -u http://target.com -d 5
+python3 xssniper.py -u http://target.com -d 5
 # Uses delay=5 (CLI wins)
 ```
 
@@ -183,14 +183,14 @@ python3 xsstrike.py -u http://target.com -d 5
 
 ### Configuration Loading Flow
 ```
-1. User runs: python3 xsstrike.py -u target --config config.yaml
+1. User runs: python3 xssniper.py -u target --config config.yaml
 2. argparse parses command-line arguments
 3. ConfigLoader finds and loads config.yaml
 4. ConfigLoader validates configuration
 5. apply_config_to_args() merges config with CLI args
    - CLI args take precedence
    - Missing values filled from config
-6. XSStrike uses final merged configuration
+6. XSSniper uses final merged configuration
 ```
 
 ### Error Handling Flow
@@ -267,10 +267,10 @@ TOTAL: 25 tests, 25 passed, 0 failed ✓
 Potential improvements for next iterations:
 - [ ] Environment variable support: `XS_DELAY=2 XS_ENCODE=base64`
 - [ ] Config profiles: `--profile aggressive`, `--profile stealth`
-- [ ] Interactive config builder: `python3 xsstrike.py --init`
+- [ ] Interactive config builder: `python3 xssniper.py --init`
 - [ ] Remote configs: Load from HTTP endpoint
-- [ ] Config validation CLI: `python3 xsstrike.py --validate-config config.yaml`
-- [ ] Config schema export: `python3 xsstrike.py --export-schema`
+- [ ] Config validation CLI: `python3 xssniper.py --validate-config config.yaml`
+- [ ] Config schema export: `python3 xssniper.py --export-schema`
 
 ## Documentation Structure
 
@@ -300,7 +300,7 @@ Potential improvements for next iterations:
 - ✅ CLI integration via `--config` flag
 - ✅ Argument precedence (CLI > config file > defaults)
 - ✅ Configuration discovery (explicit, current dir, home dir)
-- ✅ Example config file (xsstrike.yaml)
+- ✅ Example config file (xssniper.yaml)
 - ✅ Comprehensive documentation (CONFIGURATION.md)
 - ✅ Quick start guide (CONFIG_QUICKSTART.md)
 - ✅ PyYAML added to requirements.txt
@@ -309,6 +309,6 @@ Potential improvements for next iterations:
 
 ## Summary
 
-Configuration File Support is **fully implemented and tested**. XSStrike now supports enterprise-grade configuration management through YAML/JSON files, while maintaining backward compatibility with command-line arguments. This feature demonstrates professional software engineering practices and provides significant value to end users.
+Configuration File Support is **fully implemented and tested**. XSSniper now supports enterprise-grade configuration management through YAML/JSON files, while maintaining backward compatibility with command-line arguments. This feature demonstrates professional software engineering practices and provides significant value to end users.
 
 **Status**: ✅ COMPLETE AND TESTED

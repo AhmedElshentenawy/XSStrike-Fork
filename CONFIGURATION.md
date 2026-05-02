@@ -1,6 +1,6 @@
 # Configuration File Support
 
-XSStrike now supports external configuration files in YAML or JSON format. This allows you to set default values for all scanning options without modifying code or using command-line arguments every time.
+XSSniper now supports external configuration files in YAML or JSON format. This allows you to set default values for all scanning options without modifying code or using command-line arguments every time.
 
 ## Configuration File Format
 
@@ -44,31 +44,31 @@ advanced:
 ## Usage
 
 ### Option 1: Default Location
-Place `xsstrike.yaml` or `xsstrike.json` in your current directory:
+Place `xssniper.yaml` or `xssniper.json` in your current directory:
 ```bash
-# XSStrike will automatically find and load xsstrike.yaml
-python3 xsstrike.py -u http://target.com
+# XSSniper will automatically find and load xssniper.yaml
+python3 xssniper.py -u http://target.com
 ```
 
 ### Option 2: Custom Location
 Use the `--config` flag to specify a config file:
 ```bash
-python3 xsstrike.py -u http://target.com --config /path/to/config.yaml
-python3 xsstrike.py -u http://target.com --config ~/.xsstrike/prod-config.json
+python3 xssniper.py -u http://target.com --config /path/to/config.yaml
+python3 xssniper.py -u http://target.com --config ~/.xssniper/prod-config.json
 ```
 
 ### Option 3: Home Directory
-Place config in `~/.xsstrike/xsstrike.yaml`:
+Place config in `~/.xssniper/xssniper.yaml`:
 ```bash
-mkdir -p ~/.xsstrike
-cp xsstrike.yaml ~/.xsstrike/
-python3 xsstrike.py -u http://target.com  # Loads from home directory
+mkdir -p ~/.xssniper
+cp xssniper.yaml ~/.xssniper/
+python3 xssniper.py -u http://target.com  # Loads from home directory
 ```
 
 ## Examples
 
 ### Example 1: Basic YAML Configuration
-File: `xsstrike.yaml`
+File: `xssniper.yaml`
 ```yaml
 request:
   delay: 2
@@ -85,7 +85,7 @@ output:
 
 Usage:
 ```bash
-python3 xsstrike.py -u http://vulnerable-site.com
+python3 xssniper.py -u http://vulnerable-site.com
 # Uses delay=2, timeout=15, base64 encoding with fallback
 ```
 
@@ -111,7 +111,7 @@ File: `config-aggressive.json`
 
 Usage:
 ```bash
-python3 xsstrike.py -u http://target.com --config config-aggressive.json
+python3 xssniper.py -u http://target.com --config config-aggressive.json
 ```
 
 ### Example 3: Conservative Scanning
@@ -131,7 +131,7 @@ scanning:
 
 Usage:
 ```bash
-python3 xsstrike.py -u http://target.com --config config-conservative.yaml
+python3 xssniper.py -u http://target.com --config config-conservative.yaml
 ```
 
 ## Configuration Precedence
@@ -140,11 +140,11 @@ Command-line arguments **override** configuration file settings:
 
 ```bash
 # Config file sets delay=2, but CLI sets delay=5
-python3 xsstrike.py -u http://target.com --config xsstrike.yaml -d 5
+python3 xssniper.py -u http://target.com --config xssniper.yaml -d 5
 # Uses delay=5 (CLI wins)
 
 # Config file sets encode='base64', CLI doesn't specify it
-python3 xsstrike.py -u http://target.com --config xsstrike.yaml
+python3 xssniper.py -u http://target.com --config xssniper.yaml
 # Uses encode='base64' (from config file)
 ```
 
@@ -153,7 +153,7 @@ python3 xsstrike.py -u http://target.com --config xsstrike.yaml
 Configuration files are automatically validated when loaded. Invalid values will be caught:
 
 ```bash
-$ python3 xsstrike.py -u http://target.com --config invalid.yaml
+$ python3 xssniper.py -u http://target.com --config invalid.yaml
 # Error: Request timeout must be a positive number
 # Using default configuration.
 ```
@@ -163,13 +163,13 @@ $ python3 xsstrike.py -u http://target.com --config invalid.yaml
 ### YAML to JSON
 ```bash
 # Using Python
-python3 -c "import yaml, json; print(json.dumps(yaml.safe_load(open('xsstrike.yaml'))))" > xsstrike.json
+python3 -c "import yaml, json; print(json.dumps(yaml.safe_load(open('xssniper.yaml'))))" > xssniper.json
 ```
 
 ### JSON to YAML
 ```bash
 # Using Python
-python3 -c "import json, yaml; print(yaml.dump(json.load(open('xsstrike.json'))))" > xsstrike.yaml
+python3 -c "import json, yaml; print(yaml.dump(json.load(open('xssniper.json'))))" > xssniper.yaml
 ```
 
 ## Configuration Examples by Use Case
@@ -237,7 +237,7 @@ from core.config_loader import ConfigLoader, apply_config_to_args
 import argparse
 
 # Load configuration
-loader = ConfigLoader('xsstrike.yaml')
+loader = ConfigLoader('xssniper.yaml')
 config = loader.to_dict()
 
 # Get specific values
@@ -258,7 +258,7 @@ args = apply_config_to_args(args, loader)
 
 ### "Config file not found"
 - Check the file path is correct
-- For home directory: place file in `~/.xsstrike/xsstrike.yaml`
+- For home directory: place file in `~/.xssniper/xssniper.yaml`
 - Verify file permissions are readable
 
 ### "YAML parsing error"
@@ -280,7 +280,7 @@ args = apply_config_to_args(args, loader)
 
 ## Best Practices
 
-1. **Start with defaults**: Copy provided `xsstrike.yaml` and modify only what you need
+1. **Start with defaults**: Copy provided `xssniper.yaml` and modify only what you need
 2. **Use version control**: Keep configs in git with sensitive values removed
 3. **Environment-specific configs**: Create separate files (dev, prod, aggressive, conservative)
 4. **Validate before use**: Always run validation before using new configs
@@ -292,5 +292,5 @@ args = apply_config_to_args(args, loader)
 
 In future versions, you'll be able to override config with environment variables:
 ```bash
-XS_DELAY=2 XS_ENCODE=base64 python3 xsstrike.py -u http://target.com
+XS_DELAY=2 XS_ENCODE=base64 python3 xssniper.py -u http://target.com
 ```

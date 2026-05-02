@@ -1,5 +1,5 @@
 """
-Pytest configuration and shared fixtures for XSStrike tests.
+Pytest configuration and shared fixtures for XSSniper tests.
 
 This module provides:
 - Mock fixtures for HTTP requests

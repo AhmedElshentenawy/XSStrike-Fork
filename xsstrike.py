@@ -6,7 +6,7 @@ from core.colors import end, red, white, bad, info
 
 # Just a fancy ass banner
 print('''%s
-\tXSStrike %sv3.1.5
+\tXSSniper %sv3.1.5
 %s''' % (red, white, end))
 
 try:
@@ -21,10 +21,10 @@ try:
         if(ret_code != 0):
             print('%s fuzzywuzzy installation failed.' % bad)
             quit()
-        print ('%s fuzzywuzzy has been installed, restart XSStrike.' % info)
+        print ('%s fuzzywuzzy has been installed, restart XSSniper.' % info)
         quit()
 except ImportError:  # throws error in python2
-    print('%s XSStrike isn\'t compatible with python2.\n Use python > 3.4 to run XSStrike.' % bad)
+    print('%s XSSniper isn\'t compatible with python2.\n Use python > 3.4 to run XSSniper.' % bad)
     quit()
 
 # Let's import whatever we need from standard lib
@@ -187,6 +187,8 @@ core.log.log_file = args.log_file
 
 logger = core.log.setup_logger()
 
+logger.progress("Initializing XSSniper scanner...")
+
 core.config.globalVariables = vars(args)
 
 # Import everything else required from core lib
@@ -251,16 +253,22 @@ if not target and not args_seeds:  # if the user hasn't supplied a url
     quit()
 
 if fuzz:
+    logger.progress("Starting interactive fuzzer mode...")
     singleFuzz(target, paramData, encoding, headers, delay, timeout, encoding_fallback)
 elif not recursive and not args_seeds:
+    logger.progress("Starting XSS vulnerability scan...")
     if args_file:
+        logger.progress("Loading custom payloads from file...")
         bruteforcer(target, paramData, payloadList, encoding, headers, delay, timeout, encoding_fallback)
     else:
+        logger.progress("Using built-in payload database...")
         scan(target, paramData, encoding, headers, delay, timeout, skipDOM, skip, encoding_fallback)
 else:
+    logger.progress("Starting crawling and scanning mode...")
     if target:
         seedList.append(target)
     for target in seedList:
+        logger.progress("Crawling target: {}".format(target))
         logger.run('Crawling the target')
         scheme = urlparse(target).scheme
         logger.debug('Target scheme: {}'.format(scheme))

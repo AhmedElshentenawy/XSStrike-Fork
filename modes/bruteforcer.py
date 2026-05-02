@@ -11,6 +11,7 @@ logger = setup_logger(__name__)
 
 def bruteforcer(target, paramData, payloadList, encoding, headers, delay, timeout, encoding_fallback=False):
     GET, POST = (False, True) if paramData else (True, False)
+    logger.progress('Preparing bruteforce scan for target: %s' % target)
     host = urlparse(target).netloc  # Extracts host out of the url
     logger.debug('Parsed host to bruteforce: {}'.format(host))
     url = getUrl(target, GET)
@@ -21,11 +22,10 @@ def bruteforcer(target, paramData, payloadList, encoding, headers, delay, timeou
         logger.error('No parameters to test.')
         quit()
     for paramName in params.keys():
-        progress = 1
+        logger.progress('Bruteforcing parameter: %s' % paramName)
         paramsCopy = copy.deepcopy(params)
-        for payload in payloadList:
-            logger.run('Bruteforcing %s[%s%s%s]%s: %i/%i\r' %
-                       (green, end, paramName, green, end, progress, len(payloadList)))
+        for index, payload in enumerate(payloadList, start=1):
+            logger.progress('Testing payload %i/%i for %s' % (index, len(payloadList), paramName))
             raw_payload = payload
             encoded_payload = encoding(unquote(raw_payload)) if encoding else raw_payload
             if encoding and not encoding_fallback:
@@ -36,6 +36,7 @@ def bruteforcer(target, paramData, payloadList, encoding, headers, delay, timeou
             response = requester(url, paramsCopy, headers,
                                  GET, delay, timeout).text
             if encoding and encoding_fallback and raw_payload not in response and encoded_payload not in response:
+                logger.progress('Retrying with fallback encoding for payload %i/%i' % (index, len(payloadList)))
                 payload = encoded_payload
                 paramsCopy[paramName] = payload
                 response = requester(url, paramsCopy, headers,
@@ -46,5 +47,4 @@ def bruteforcer(target, paramData, payloadList, encoding, headers, delay, timeou
                 display_payload = encoding(payload)
             if raw_payload in response or encoded_payload in response:
                 logger.info('%s %s' % (good, display_payload))
-            progress += 1
-    logger.no_format('')
+    logger.progress('Bruteforce scan completed for target: %s' % target)

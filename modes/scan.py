@@ -21,6 +21,7 @@ logger = setup_logger(__name__)
 
 def scan(target, paramData, encoding, headers, delay, timeout, skipDOM, skip, encoding_fallback=False):
     GET, POST = (False, True) if paramData else (True, False)
+    logger.progress("Preparing scan configuration...")
     # If the user hasn't supplied the root url with http(s), we will handle it
     if not target.startswith('http'):
         try:
@@ -30,10 +31,11 @@ def scan(target, paramData, encoding, headers, delay, timeout, skipDOM, skip, en
         except (requests.RequestException, Exception) as e:
             logger.debug('HTTPS connection failed: {}'.format(str(e)))
             target = 'http://' + target
-    logger.debug('Scan target: {}'.format(target))
+    logger.progress("Fetching initial response from target...")
     response = requester(target, {}, headers, GET, delay, timeout).text
 
     if not skipDOM:
+        logger.progress("Scanning for DOM-based XSS vulnerabilities...")
         logger.run('Checking for DOM vulnerabilities')
         highlighted = dom(response)
         if highlighted:
@@ -47,10 +49,12 @@ def scan(target, paramData, encoding, headers, delay, timeout, skipDOM, skip, en
     url = getUrl(target, GET)
     logger.debug('Url to scan: {}'.format(url))
     params = getParams(target, paramData, GET)
+    logger.progress("Extracting and preparing parameters for testing...")
     logger.debug_json('Scan parameters:', params)
     if not params:
         logger.error('No parameters to test.')
         quit()
+    logger.progress("Detecting Web Application Firewall...")
     WAF = wafDetector(
         url, {list(params.keys())[0]: xsschecker}, headers, GET, delay, timeout)
     if WAF:
@@ -60,12 +64,14 @@ def scan(target, paramData, encoding, headers, delay, timeout, skipDOM, skip, en
 
     for paramName in params.keys():
         paramsCopy = copy.deepcopy(params)
-        logger.info('Testing parameter: %s' % paramName)
+        logger.progress("Testing parameter: {}".format(paramName))
         if encoding:
             paramsCopy[paramName] = encoding(xsschecker)
         else:
             paramsCopy[paramName] = xsschecker
+        logger.progress("Sending test request to check reflections...")
         response = requester(url, paramsCopy, headers, GET, delay, timeout)
+        logger.progress("Parsing HTML response for XSS injection points...")
         occurences = htmlParser(response, encoding)
         positions = occurences.keys()
         logger.debug('Scan occurences: {}'.format(occurences))
@@ -75,10 +81,12 @@ def scan(target, paramData, encoding, headers, delay, timeout, skipDOM, skip, en
         else:
             logger.info('Reflections found: %i' % len(occurences))
 
+        logger.progress("Analyzing reflection patterns and efficiencies...")
         logger.run('Analysing reflections')
         efficiencies = filterChecker(
             url, paramsCopy, headers, GET, delay, occurences, timeout, encoding, encoding_fallback)
         logger.debug('Scan efficiencies: {}'.format(efficiencies))
+        logger.progress("Generating XSS payload vectors based on reflections...")
         logger.run('Generating payloads')
         vectors = generator(occurences, response.text)
         total = 0
@@ -95,7 +103,7 @@ def scan(target, paramData, encoding, headers, delay, timeout, skipDOM, skip, en
                     vect = vect.replace('/', '%2F')
                 loggerVector = vect
                 progress += 1
-                logger.run('Progress: %i/%i\r' % (progress, total))
+                logger.progress('Testing payload {}/{}: {}'.format(progress, total, loggerVector[:50] + ('...' if len(loggerVector) > 50 else '')))
                 if not GET:
                     vect = unquote(vect)
                 efficiencies = checker(

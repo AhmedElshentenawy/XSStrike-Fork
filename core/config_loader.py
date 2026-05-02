@@ -1,10 +1,10 @@
 """
-Configuration file loader for XSStrike.
+Configuration file loader for XSSniper.
 
 Supports YAML configuration files for setting default values.
 Usage:
     from core.config_loader import ConfigLoader
-    config = ConfigLoader('xsstrike.yaml')
+    config = ConfigLoader('xssniper.yaml')
     settings = config.load()
 """
 
@@ -31,7 +31,7 @@ class ConfigLoader:
         Initialize config loader.
         
         Args:
-            config_path (str): Path to config file. If None, uses 'xsstrike.yaml' or 'xsstrike.json'
+            config_path (str): Path to config file. If None, uses 'xssniper.yaml' or 'xssniper.json'
         """
         self.config_path: Optional[str] = config_path or self._find_config_file()
         self.config: Dict[str, Any] = {}
@@ -39,14 +39,14 @@ class ConfigLoader:
     def _find_config_file(self) -> Optional[str]:
         """Find config file in current directory or home directory."""
         # Check current directory first
-        for filename in ['xsstrike.yaml', 'xsstrike.yml', 'xsstrike.json']:
+        for filename in ['xssniper.yaml', 'xssniper.yml', 'xssniper.json']:
             if os.path.exists(filename):
                 return filename
         
         # Check home directory
         home = Path.home()
-        for filename in ['xsstrike.yaml', 'xsstrike.yml', 'xsstrike.json']:
-            path = home / f'.xsstrike/{filename}'
+        for filename in ['xssniper.yaml', 'xssniper.yml', 'xssniper.json']:
+            path = home / f'.xssniper/{filename}'
             if path.exists():
                 return str(path)
         

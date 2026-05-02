@@ -5,10 +5,10 @@
 ### Step 1: Create Configuration File
 ```bash
 # Copy the example config
-cp xsstrike.yaml ~/.xsstrike/xsstrike.yaml
+cp xssniper.yaml ~/.xssniper/xssniper.yaml
 
 # Or create from scratch
-cat > xsstrike.yaml << EOF
+cat > xssniper.yaml << EOF
 request:
   delay: 2
   timeout: 15
@@ -21,18 +21,18 @@ EOF
 ```
 
 ### Step 2: Customize (Optional)
-Edit `xsstrike.yaml` with your preferred settings:
+Edit `xssniper.yaml` with your preferred settings:
 ```bash
-nano xsstrike.yaml
+nano xssniper.yaml
 ```
 
-### Step 3: Run XSStrike
+### Step 3: Run XSSniper
 ```bash
-# Auto-loads from current directory or ~/.xsstrike/
-python3 xsstrike.py -u http://target.com
+# Auto-loads from current directory or ~/.xssniper/
+python3 xssniper.py -u http://target.com
 
 # Or specify a config file
-python3 xsstrike.py -u http://target.com --config /path/to/config.yaml
+python3 xssniper.py -u http://target.com --config /path/to/config.yaml
 ```
 
 ## Common Configurations
@@ -77,13 +77,13 @@ scanning:
 
 **Config File** (for defaults):
 ```bash
-python3 xsstrike.py -u http://target.com
-# Uses settings from xsstrike.yaml
+python3 xssniper.py -u http://target.com
+# Uses settings from xssniper.yaml
 ```
 
 **CLI Overrides** (for specific scans):
 ```bash
-python3 xsstrike.py -u http://target.com -d 5 --encode base64
+python3 xssniper.py -u http://target.com -d 5 --encode base64
 # Uses delay=5 and base64 encoding (overrides config)
 ```
 
@@ -93,7 +93,7 @@ Check if your config is valid:
 ```python
 from core.config_loader import ConfigLoader
 
-loader = ConfigLoader('xsstrike.yaml')
+loader = ConfigLoader('xssniper.yaml')
 is_valid, message = loader.validate()
 print(f"Valid: {is_valid}, Message: {message}")
 ```
