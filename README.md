@@ -53,6 +53,7 @@ Apart from that, XSStrike has crawling, fuzzing, parameter discovery, WAF detect
 - Intelligent payload generator
 - Handmade HTML & JavaScript parser.om/s0md3v/XSStrike/wiki/Compatibility-&-Dependencies)
 - *Estimated Time of Arrival (ETA)
+- *Export results to JSON
 
 ### FAQ
 - [It says fuzzywuzzy isn't installed but it is.](https://github.com/s0md3v/XSStrike/wiki/FAQ#it-says-fuzzywuzzy-is-not-installed-but-its)

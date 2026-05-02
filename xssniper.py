@@ -3,9 +3,7 @@
 from __future__ import print_function
 from datetime import datetime
 from core.colors import end, red, white, bad, info
-
 # Just a fancy ass banner
-# Endanced by sara
 print('''%s
 \tXSSniper %sv3.1.5   
 %s''' % (red, white, end))
@@ -79,6 +77,7 @@ parser.add_argument('--skip-dom', help='skip dom checking',
                     dest='skipDOM', action='store_true')
 parser.add_argument('--blind', help='inject blind XSS payload while crawling',
                     dest='blindXSS', action='store_true')
+parser.add_argument('--export-json', help='Save results to JSON file', action='store_true')
 parser.add_argument('--console-log-level', help='Console logging level',
                     dest='console_log_level', default=core.log.console_log_level,
                     choices=core.log.log_config.keys())
@@ -86,6 +85,7 @@ parser.add_argument('--file-log-level', help='File logging level', dest='file_lo
                     choices=core.log.log_config.keys(), default=None)
 parser.add_argument('--log-file', help='Name of the file to log', dest='log_file',
                     default=core.log.log_file)
+
 args = parser.parse_args()
 
 # Pull all parameter values of dict from argparse namespace into local variables of name == key
@@ -184,7 +184,10 @@ elif not recursive and not args_seeds:
     if args_file:
         bruteforcer(target, paramData, payloadList, encoding, headers, delay, timeout, encoding_fallback)
     else:
-        scan(target, paramData, encoding, headers, delay, timeout, skipDOM, skip, encoding_fallback)
+        results = scan(target, paramData, encoding, headers, delay, timeout, skipDOM, skip, encoding_fallback)
+        if args.export_json:
+            from core.utils import save_results_to_json
+            save_results_to_json(results)
 else:
     if target:
         seedList.append(target)

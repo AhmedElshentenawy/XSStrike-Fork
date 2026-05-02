@@ -20,6 +20,17 @@ logger = setup_logger(__name__)
 
 
 def scan(target, paramData, encoding, headers, delay, timeout, skipDOM, skip, encoding_fallback=False):
+    # ===== JSON Results Collection Start =====
+    from datetime import datetime
+    scan_results = {
+        "target": target,
+        "timestamp": str(datetime.now()),
+        "parameters": [],
+        "total_payloads_tested": 0,
+        "vulnerabilities": []
+    }
+    total=0
+    # ===== JSON Results Collection End =====
     GET, POST = (False, True) if paramData else (True, False)
     # If the user hasn't supplied the root url with http(s), we will handle it
     if not target.startswith('http'):
@@ -128,6 +139,14 @@ def scan(target, paramData, encoding, headers, delay, timeout, skipDOM, skip, en
                     logger.good('Payload: %s' % loggerVector)
                     logger.info('Efficiency: %i' % bestEfficiency)
                     logger.info('Confidence: %i' % confidence)
+                    # ===== Save vulnerability to JSON =====
+                    scan_results["vulnerabilities"].append({
+                        "parameter": paramName,
+                        "payload": loggerVector,
+                        "efficiency": bestEfficiency,
+                        "confidence": confidence,
+                        "time": str(datetime.now())
+                    })
                     if not skip:
                         choice = input(
                             '%s Would you like to continue scanning? [y/N] ' % que).lower()
@@ -139,3 +158,7 @@ def scan(target, paramData, encoding, headers, delay, timeout, skipDOM, skip, en
                     logger.info('Efficiency: %i' % bestEfficiency)
                     logger.info('Confidence: %i' % confidence)
         logger.no_format('')
+    # ===== Return results for JSON export =====
+    scan_results["total_payloads_tested"] = total
+    scan_results["parameters"] = list(params.keys())
+    return scan_results

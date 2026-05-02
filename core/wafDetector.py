@@ -22,7 +22,13 @@ def wafDetector(url, params, headers, GET, delay, timeout):
     logger.debug('Waf Detector code: {}'.format(code))
     logger.debug_json('Waf Detector headers:', response.headers)
 
-    if int(code) >= 400:
+    # Handle case where code is not a valid integer (e.g., 'None' or None)
+    try:
+        status_code = int(code)
+    except (ValueError, TypeError):
+        status_code = 0
+
+    if status_code >= 400:
         bestMatch = [0, None]
         for wafName, wafSignature in wafSignatures.items():
             score = 0

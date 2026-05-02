@@ -9,6 +9,9 @@ from core.config import xsschecker
 import time
 from datetime import timedelta
 
+import json
+from datetime import datetime
+
 def converter(data, url=False):
     if 'str' in str(type(data)):
         if url:
@@ -298,3 +301,17 @@ class ETACalculator:
     
     def get_progress_percent(self):
         return (self.processed_items / self.total_items) * 100
+
+    
+
+def save_results_to_json(results, filename=None):
+    """Save scan results to a JSON file."""
+    if filename is None:
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"scan_results_{timestamp}.json"
+    
+    with open(filename, 'w', encoding='utf-8') as f:
+        json.dump(results, f, indent=4, ensure_ascii=False)
+    
+    print(f"[+] Results saved to {filename}")
+    return filename
