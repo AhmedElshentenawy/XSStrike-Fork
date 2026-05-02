@@ -1,6 +1,7 @@
 import copy
 from fuzzywuzzy import fuzz
 import re
+from typing import List, Dict, Any, Callable
 from urllib.parse import unquote
 
 from core.config import xsschecker
@@ -8,7 +9,7 @@ from core.requester import requester
 from core.utils import replaceValue, fillHoles
 
 
-def checker(url, params, headers, GET, delay, payload, positions, timeout, encoding, encoding_fallback=False):
+def checker(url: str, params: Dict[str, str], headers: Dict[str, str], GET: bool, delay: int, payload: str, positions: List[int], timeout: int, encoding: Callable[[str], str], encoding_fallback: bool = False) -> List[int]:
     def run_check(use_encoding):
         checkString = 'st4r7s' + payload + '3nd'
         if use_encoding and encoding:

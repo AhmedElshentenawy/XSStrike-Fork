@@ -1,13 +1,14 @@
 import json
 import random
 import re
+from typing import List, Dict, Optional, Any, Union
 from urllib.parse import urlparse
 
 import core.config
 from core.config import xsschecker
 
 
-def converter(data, url=False):
+def converter(data: Any, url: bool = False) -> Any:
     if 'str' in str(type(data)):
         if url:
             dictized = {}
@@ -27,12 +28,12 @@ def converter(data, url=False):
             return json.dumps(data)
 
 
-def counter(string):
+def counter(string: str) -> int:
     string = re.sub(r'\s|\w', '', string)
     return len(string)
 
 
-def closest(number, numbers):
+def closest(number: int, numbers: Dict[str, int]) -> Dict[str, int]:
     difference = [abs(list(numbers.values())[0]), {}]
     for index, i in numbers.items():
         diff = abs(number - i)
@@ -41,7 +42,7 @@ def closest(number, numbers):
     return difference[1]
 
 
-def fillHoles(original, new):
+def fillHoles(original: List[int], new: List[int]) -> List[int]:
     filler = 0
     filled = []
     for x, y in zip(original, new):
@@ -53,7 +54,7 @@ def fillHoles(original, new):
     return filled
 
 
-def stripper(string, substring, direction='right'):
+def stripper(string: str, substring: str, direction: str = 'right') -> str:
     done = False
     strippedString = ''
     if direction == 'right':
@@ -68,7 +69,7 @@ def stripper(string, substring, direction='right'):
     return strippedString
 
 
-def extractHeaders(headers):
+def extractHeaders(headers: str) -> Dict[str, str]:
     headers = headers.replace('\\n', '\n')
     sorted_headers = {}
     matches = re.findall(r'(.*):\s(.*)', headers)
@@ -84,7 +85,7 @@ def extractHeaders(headers):
     return sorted_headers
 
 
-def replaceValue(mapping, old, new, strategy=None):
+def replaceValue(mapping: Dict[str, Any], old: Any, new: Any, strategy: Optional[Any] = None) -> Dict[str, Any]:
     """
     Replace old values with new ones following dict strategy.
 
@@ -102,14 +103,14 @@ def replaceValue(mapping, old, new, strategy=None):
     return anotherMap
 
 
-def getUrl(url, GET):
+def getUrl(url: str, GET: bool) -> str:
     if GET:
         return url.split('?')[0]
     else:
         return url
 
 
-def extractScripts(response):
+def extractScripts(response: str) -> List[str]:
     scripts = []
     matches = re.findall(r'(?s)<script.*?>(.*?)</script>', response.lower())
     for match in matches:
@@ -118,11 +119,11 @@ def extractScripts(response):
     return scripts
 
 
-def randomUpper(string):
+def randomUpper(string: str) -> str:
     return ''.join(random.choice((x, y)) for x, y in zip(string.upper(), string.lower()))
 
 
-def flattenParams(currentParam, params, payload):
+def flattenParams(currentParam: str, params: Dict[str, str], payload: str) -> str:
     flatted = []
     for name, value in params.items():
         if name == currentParam:
@@ -131,7 +132,7 @@ def flattenParams(currentParam, params, payload):
     return '?' + '&'.join(flatted)
 
 
-def genGen(fillings, eFillings, lFillings, eventHandlers, tags, functions, ends, badTag=None):
+def genGen(fillings: tuple, eFillings: tuple, lFillings: tuple, eventHandlers: dict, tags: tuple, functions: tuple, ends: tuple, badTag: Optional[str] = None) -> List[str]:
     vectors = []
     r = randomUpper  # randomUpper randomly converts chars of a string to uppercase
     for tag in tags:
@@ -159,7 +160,7 @@ def genGen(fillings, eFillings, lFillings, eventHandlers, tags, functions, ends,
     return vectors
 
 
-def getParams(url, data, GET):
+def getParams(url: str, data: Any, GET: bool) -> Optional[Dict[str, str]]:
     params = {}
     if '?' in url and '=' in url:
         data = url.split('?')[1]
@@ -189,7 +190,7 @@ def getParams(url, data, GET):
     return params
 
 
-def writer(obj, path):
+def writer(obj: Any, path: str) -> None:
     kind = str(type(obj)).split('\'')[0]
     if kind == 'list' or kind == 'tuple':
         obj = '\n'.join(obj)
@@ -200,13 +201,13 @@ def writer(obj, path):
     savefile.close()
 
 
-def reader(path):
+def reader(path: str) -> List[str]:
     with open(path, 'r') as f:
         result = [line.rstrip(
                     '\n').encode('utf-8').decode('utf-8') for line in f]
     return result
 
-def js_extractor(response):
+def js_extractor(response: str) -> List[str]:
     """Extract js files from the response body"""
     scripts = []
     matches = re.findall(r'<(?:script|SCRIPT).*?(?:src|SRC)=([^\s>]+)', response)
@@ -216,7 +217,7 @@ def js_extractor(response):
     return scripts
 
 
-def handle_anchor(parent_url, url):
+def handle_anchor(parent_url: str, url: str) -> str:
     scheme = urlparse(parent_url).scheme
     if url[:4] == 'http':
         return url
@@ -233,14 +234,14 @@ def handle_anchor(parent_url, url):
         return parent_url + '/' + url
 
 
-def deJSON(data):
+def deJSON(data: str) -> str:
     return data.replace('\\\\', '\\')
 
 
-def getVar(name):
+def getVar(name: str) -> Any:
     return core.config.globalVariables[name]
 
-def updateVar(name, data, mode=None):
+def updateVar(name: str, data: Any, mode: Optional[str] = None) -> None:
     if mode:
         if mode == 'append':
             core.config.globalVariables[name].append(data)
