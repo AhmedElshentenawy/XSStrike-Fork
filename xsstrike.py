@@ -35,6 +35,7 @@ import argparse
 # ... and configurations core lib
 import core.config
 import core.log
+from core.config_loader import ConfigLoader, apply_config_to_args
 
 # Processing command line arguments, where dest var names will be mapped to local vars with the same name
 parser = argparse.ArgumentParser()
@@ -83,7 +84,14 @@ parser.add_argument('--file-log-level', help='File logging level', dest='file_lo
                     choices=core.log.log_config.keys(), default=None)
 parser.add_argument('--log-file', help='Name of the file to log', dest='log_file',
                     default=core.log.log_file)
+parser.add_argument('--config', help='path to configuration file (YAML or JSON)',
+                    dest='config_file', default=None)
 args = parser.parse_args()
+
+# Load configuration from file and merge with command-line arguments
+config_loader = ConfigLoader(args.config_file)
+config_loader.validate()  # Validate config file
+args = apply_config_to_args(args, config_loader)
 
 # Pull all parameter values of dict from argparse namespace into local variables of name == key
 # The following works, but the static checkers are too static ;-) locals().update(vars(args))
