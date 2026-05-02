@@ -2,6 +2,7 @@ import copy
 import requests
 from random import randint
 from time import sleep
+from typing import Dict, Callable
 from urllib.parse import unquote
 
 from core.colors import end, red, green, yellow
@@ -13,7 +14,7 @@ from core.log import setup_logger
 logger = setup_logger(__name__)
 
 
-def fuzzer(url, params, headers, GET, delay, timeout, WAF, encoding, encoding_fallback=False):
+def fuzzer(url: str, params: Dict[str, str], headers: Dict[str, str], GET: bool, delay: int, timeout: int, WAF: bool, encoding: Callable[[str], str], encoding_fallback: bool = False) -> None:
     for fuzz in fuzzes:
         if delay == 0:
             delay = 0
