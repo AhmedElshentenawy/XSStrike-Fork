@@ -51,31 +51,8 @@ Apart from that, XSStrike has crawling, fuzzing, parameter discovery, WAF detect
 - WAF detection & evasion
 - Outdated JS lib scanning
 - Intelligent payload generator
-- Handmade HTML & JavaScript parser
-- Powerful fuzzing engine
-- Blind XSS support
-- Highly researched work-flow
-- Complete HTTP support
-- Bruteforce payloads from a file
-- Powered by [Photon](https://github.com/s0md3v/Photon), [Zetanize](https://github.com/s0md3v/zetanize) and [Arjun](https://github.com/s0md3v/Arjun)
-- Payload Encoding
-
-### Installation
-Enter the following commands one by one in terminal:
-```
-git clone https://github.com/s0md3v/XSStrike
-cd XSStrike
-pip install -r requirements.txt --break-system-packages
-```
-
-Now, XSStrike can be used at any time as follows:
-```
-python xsstrike.py
-```
-
-### Documentation
-- [Usage](https://github.com/s0md3v/XSStrike/wiki/Usage)
-- [Compatibility & Dependencies](https://github.com/s0md3v/XSStrike/wiki/Compatibility-&-Dependencies)
+- Handmade HTML & JavaScript parser.om/s0md3v/XSStrike/wiki/Compatibility-&-Dependencies)
+- *Estimated Time of Arrival (ETA)
 
 ### FAQ
 - [It says fuzzywuzzy isn't installed but it is.](https://github.com/s0md3v/XSStrike/wiki/FAQ#it-says-fuzzywuzzy-is-not-installed-but-its)

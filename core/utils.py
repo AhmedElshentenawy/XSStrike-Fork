@@ -6,6 +6,8 @@ from urllib.parse import urlparse
 import core.config
 from core.config import xsschecker
 
+import time
+from datetime import timedelta
 
 def converter(data, url=False):
     if 'str' in str(type(data)):
@@ -274,3 +276,25 @@ def escaped(position, string):
             return True
     else:
         return False
+
+
+class ETACalculator:
+    def init(self, total_items):
+        self.total_items = total_items
+        self.processed_items = 0
+        self.start_time = time.time()
+        self.avg_time = 0
+    
+    def update(self):
+        self.processed_items += 1
+        elapsed = time.time() - self.start_time
+        self.avg_time = elapsed / self.processed_items
+        
+        remaining_items = self.total_items - self.processed_items
+        remaining_seconds = remaining_items * self.avg_time
+        self.eta = timedelta(seconds=int(remaining_seconds))
+        
+        return str(self.eta)
+    
+    def get_progress_percent(self):
+        return (self.processed_items / self.total_items) * 100

@@ -84,6 +84,13 @@ def scan(target, paramData, encoding, headers, delay, timeout, skipDOM, skip, en
         total = 0
         for v in vectors.values():
             total += len(v)
+        # Estimated Time of Arrival (ETA) feature start
+        import time 
+        start_time =time.time()
+        current_payload_index=0
+        logger.info('Total payload to test: %i'%total)
+        # Estimated Time of Arrival (ETA) feature end
+
         if total == 0:
             logger.error('No vectors were crafted.')
             continue
@@ -91,6 +98,18 @@ def scan(target, paramData, encoding, headers, delay, timeout, skipDOM, skip, en
         progress = 0
         for confidence, vects in vectors.items():
             for vect in vects:
+                # Estimated Time of Arrival (ETA) feature start
+                current_payload_index += 1
+                if current_payload_index % 10 == 0 or current_payload_index == total:
+                    elapsed = time.time() - start_time
+                    avg_time = elapsed / current_payload_index
+                    remaining_seconds = (total - current_payload_index) * avg_time
+                    from datetime import timedelta
+                    eta = str(timedelta(seconds=int(remaining_seconds)))
+                    percent = (current_payload_index / total) * 100
+                    logger.info('Progress: %i/%i (%.1f%%) | ETA: %s' % (
+                        current_payload_index, total, percent, eta))
+                # Estimated Time of Arrival (ETA) feature end
                 if core.config.globalVariables['path']:
                     vect = vect.replace('/', '%2F')
                 loggerVector = vect

@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
 
 from __future__ import print_function
-
+from datetime import datetime
 from core.colors import end, red, white, bad, info
 
 # Just a fancy ass banner
+# Endanced by sara
 print('''%s
-\tXSStrike %sv3.1.5
+\tXSSniper %sv3.1.5   
 %s''' % (red, white, end))
-
+print("\n[+]Done ")
+print("[+]Scane started at: ",datetime.now())
+print("-"*50)
 try:
     import concurrent.futures
     from urllib.parse import urlparse
