@@ -3,6 +3,7 @@
 from __future__ import print_function
 from datetime import datetime
 from core.colors import end, red, white, bad, info
+print("DEBUG: This is the correct file")
 # Just a fancy ass banner
 print('''%s
 \tXSSniper %sv3.1.5   
@@ -34,8 +35,8 @@ try:
         quit()
 except ImportError:  # throws error in python2
     print('%s XSStrike isn\'t compatible with python2.\n Use python > 3.4 to run XSStrike.' % bad)
-        print ('%s fuzzywuzzy has been installed, restart XSSniper.' % info)
-        quit()
+    print ('%s fuzzywuzzy has been installed, restart XSSniper.' % info)
+    quit()
 except ImportError:  # throws error in python2
     print('%s XSSniper isn\'t compatible with python2.\n Use python > 3.4 to run XSSniper.' % bad)
     quit()
@@ -45,6 +46,27 @@ import sys
 import json
 import argparse
 
+parser = argparse.ArgumentParser(
+    description='XSStrike - Advanced XSS Detection and Exploitation Suite',
+    epilog='''Examples:
+  Basic scan:
+    python3 xsstrike.py -u http://example.com
+
+  Crawl and scan:
+    python3 xsstrike.py -u http://example.com --crawl --level 3
+
+  Fuzz with custom payloads:
+    python3 xsstrike.py -u http://example.com --fuzzer -f payloads.txt
+
+  Use configuration file:
+    python3 xsstrike.py -u http://example.com --config custom.yaml
+
+  POST data scan:
+    python3 xsstrike.py -u http://example.com --data "param=value"
+
+For more options, use --help''',
+    formatter_class=argparse.RawDescriptionHelpFormatter
+)
 # ... and configurations core lib
 import core.config
 import core.log
@@ -89,7 +111,8 @@ parser.add_argument('--skip-dom', help='skip dom checking',
                     dest='skipDOM', action='store_true')
 parser.add_argument('--blind', help='inject blind XSS payload while crawling',
                     dest='blindXSS', action='store_true')
-parser.add_argument('--export-json', help='Save results to JSON file', action='store_true')
+#parser.add_argument('--export-json', help='Save results to JSON file', action='store_true')
+parser.add_argument('--save-json', help='Save results to JSON file', action='store_true')
 parser.add_argument('--console-log-level', help='Console logging level',
                     dest='console_log_level', default=core.log.console_log_level,
                     choices=core.log.log_config.keys())
@@ -98,38 +121,18 @@ parser.add_argument('--file-log-level', help='File logging level', dest='file_lo
 parser.add_argument('--log-file', help='Name of the file to log', dest='log_file',
                     default=core.log.log_file)
 
+print("Checking for --save-json in argv:", sys.argv)
+print("Parser arguments defined: ", [action.option_strings for action in parser._actions])
 args = parser.parse_args()
 
 from core.config_loader import ConfigLoader, apply_config_to_args
 
 # Processing command line arguments, where dest var names will be mapped to local vars with the same name
-parser = argparse.ArgumentParser(
-    description='XSStrike - Advanced XSS Detection and Exploitation Suite',
-    epilog='''Examples:
-  Basic scan:
-    python3 xsstrike.py -u http://example.com
 
-  Crawl and scan:
-    python3 xsstrike.py -u http://example.com --crawl --level 3
-
-  Fuzz with custom payloads:
-    python3 xsstrike.py -u http://example.com --fuzzer -f payloads.txt
-
-  Use configuration file:
-    python3 xsstrike.py -u http://example.com --config custom.yaml
-
-  POST data scan:
-    python3 xsstrike.py -u http://example.com --data "param=value"
-
-For more options, use --help''',
-    formatter_class=argparse.RawDescriptionHelpFormatter
-)
 
 # Target Options
 target_group = parser.add_argument_group('Target Options')
-target_group.add_argument('-u', '--url', 
-                        help='Target URL to scan for XSS vulnerabilities',
-                        dest='target')
+
 target_group.add_argument('--data', 
                          help='POST data to send with requests (e.g., "param1=value1&param2=value2")',
                          dest='paramData')
@@ -324,15 +327,15 @@ elif not recursive and not args_seeds:
         bruteforcer(target, paramData, payloadList, encoding, headers, delay, timeout, encoding_fallback)
     else:
         results = scan(target, paramData, encoding, headers, delay, timeout, skipDOM, skip, encoding_fallback)
-        if args.export_json:
+        if args.save_json:
             from core.utils import save_results_to_json
             save_results_to_json(results)
 else:
     if target:
         seedList.append(target)
     for target in seedList:
-    logger.no_format('\n' + parser.format_help())
-    quit()
+        logger.no_format('\n' + parser.format_help())
+        quit()
 
 if fuzz:
     logger.progress("Starting interactive fuzzer mode...")
