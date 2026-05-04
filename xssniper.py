@@ -1,6 +1,16 @@
 #!/usr/bin/env python3
 
 from __future__ import print_function
+from datetime import datetime
+from core.colors import end, red, white, bad, info
+print("DEBUG: This is the correct file")
+# Just a fancy ass banner
+print('''%s
+\tXSSniper %sv3.1.5   
+%s''' % (red, white, end))
+print("\n[+]Done ")
+print("[+]Scane started at: ",datetime.now())
+print("-"*50)
 
 from core.colors import end, red, white, bad, info
 
@@ -21,8 +31,12 @@ try:
         if(ret_code != 0):
             print('%s fuzzywuzzy installation failed.' % bad)
             quit()
-        print ('%s fuzzywuzzy has been installed, restart XSSniper.' % info)
+        print ('%s fuzzywuzzy has been installed, restart XSStrike.' % info)
         quit()
+except ImportError:  # throws error in python2
+    print('%s XSStrike isn\'t compatible with python2.\n Use python > 3.4 to run XSStrike.' % bad)
+    print ('%s fuzzywuzzy has been installed, restart XSSniper.' % info)
+    quit()
 except ImportError:  # throws error in python2
     print('%s XSSniper isn\'t compatible with python2.\n Use python > 3.4 to run XSSniper.' % bad)
     quit()
@@ -32,12 +46,6 @@ import sys
 import json
 import argparse
 
-# ... and configurations core lib
-import core.config
-import core.log
-from core.config_loader import ConfigLoader, apply_config_to_args
-
-# Processing command line arguments, where dest var names will be mapped to local vars with the same name
 parser = argparse.ArgumentParser(
     description='XSStrike - Advanced XSS Detection and Exploitation Suite',
     epilog='''Examples:
@@ -59,12 +67,72 @@ parser = argparse.ArgumentParser(
 For more options, use --help''',
     formatter_class=argparse.RawDescriptionHelpFormatter
 )
+# ... and configurations core lib
+import core.config
+import core.log
+
+# Processing command line arguments, where dest var names will be mapped to local vars with the same name
+parser = argparse.ArgumentParser()
+parser.add_argument('-u', '--url', help='url', dest='target')
+parser.add_argument('--data', help='post data', dest='paramData')
+parser.add_argument('-e', '--encode', help='encode payloads (url or base64, default: url)',
+                    dest='encode', choices=['url', 'base64'], default='url')
+parser.add_argument('--encode-fallback', help='retry failed payloads with the selected encoding',
+                    dest='encode_fallback', action='store_true')
+parser.add_argument('--fuzzer', help='fuzzer',
+                    dest='fuzz', action='store_true')
+parser.add_argument('--update', help='update',
+                    dest='update', action='store_true')
+parser.add_argument('--timeout', help='timeout',
+                    dest='timeout', type=int, default=core.config.timeout)
+parser.add_argument('--proxy', help='use prox(y|ies)',
+                    dest='proxy', action='store_true')
+parser.add_argument('--crawl', help='crawl',
+                    dest='recursive', action='store_true')
+parser.add_argument('--json', help='treat post data as json',
+                    dest='jsonData', action='store_true')
+parser.add_argument('--path', help='inject payloads in the path',
+                    dest='path', action='store_true')
+parser.add_argument(
+    '--seeds', help='load crawling seeds from a file', dest='args_seeds')
+parser.add_argument(
+    '-f', '--file', help='load payloads from a file', dest='args_file')
+parser.add_argument('-l', '--level', help='level of crawling',
+                    dest='level', type=int, default=2)
+parser.add_argument('--headers', help='add headers',
+                    dest='add_headers', nargs='?', const=True)
+parser.add_argument('-t', '--threads', help='number of threads',
+                    dest='threadCount', type=int, default=core.config.threadCount)
+parser.add_argument('-d', '--delay', help='delay between requests',
+                    dest='delay', type=int, default=core.config.delay)
+parser.add_argument('--skip', help='don\'t ask to continue',
+                    dest='skip', action='store_true')
+parser.add_argument('--skip-dom', help='skip dom checking',
+                    dest='skipDOM', action='store_true')
+parser.add_argument('--blind', help='inject blind XSS payload while crawling',
+                    dest='blindXSS', action='store_true')
+#parser.add_argument('--export-json', help='Save results to JSON file', action='store_true')
+parser.add_argument('--save-json', help='Save results to JSON file', action='store_true')
+parser.add_argument('--console-log-level', help='Console logging level',
+                    dest='console_log_level', default=core.log.console_log_level,
+                    choices=core.log.log_config.keys())
+parser.add_argument('--file-log-level', help='File logging level', dest='file_log_level',
+                    choices=core.log.log_config.keys(), default=None)
+parser.add_argument('--log-file', help='Name of the file to log', dest='log_file',
+                    default=core.log.log_file)
+
+print("Checking for --save-json in argv:", sys.argv)
+print("Parser arguments defined: ", [action.option_strings for action in parser._actions])
+args = parser.parse_args()
+
+from core.config_loader import ConfigLoader, apply_config_to_args
+
+# Processing command line arguments, where dest var names will be mapped to local vars with the same name
+
 
 # Target Options
 target_group = parser.add_argument_group('Target Options')
-target_group.add_argument('-u', '--url', 
-                        help='Target URL to scan for XSS vulnerabilities',
-                        dest='target')
+
 target_group.add_argument('--data', 
                          help='POST data to send with requests (e.g., "param1=value1&param2=value2")',
                          dest='paramData')
@@ -249,8 +317,25 @@ if update:  # if the user has supplied --update argument
     quit()  # quitting because files have been changed
 
 if not target and not args_seeds:  # if the user hasn't supplied a url
-    logger.no_format('\n' + parser.format_help())
+    logger.no_format('\n' + parser.format_help().lower())
     quit()
+
+if fuzz:
+    singleFuzz(target, paramData, encoding, headers, delay, timeout, encoding_fallback)
+elif not recursive and not args_seeds:
+    if args_file:
+        bruteforcer(target, paramData, payloadList, encoding, headers, delay, timeout, encoding_fallback)
+    else:
+        results = scan(target, paramData, encoding, headers, delay, timeout, skipDOM, skip, encoding_fallback)
+        if args.save_json:
+            from core.utils import save_results_to_json
+            save_results_to_json(results)
+else:
+    if target:
+        seedList.append(target)
+    for target in seedList:
+        logger.no_format('\n' + parser.format_help())
+        quit()
 
 if fuzz:
     logger.progress("Starting interactive fuzzer mode...")

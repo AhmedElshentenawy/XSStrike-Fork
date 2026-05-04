@@ -51,6 +51,9 @@ Apart from that, XSSniper has crawling, fuzzing, parameter discovery, WAF detect
 - WAF detection & evasion
 - Outdated JS lib scanning
 - Intelligent payload generator
+- Handmade HTML & JavaScript parser.om/s0md3v/XSStrike/wiki/Compatibility-&-Dependencies)
+- *Estimated Time of Arrival (ETA)
+- *Export results to JSON
 - Handmade HTML & JavaScript parser
 - Powerful fuzzing engine
 - Blind XSS support

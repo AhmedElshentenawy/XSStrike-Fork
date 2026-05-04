@@ -7,6 +7,11 @@ from urllib.parse import urlparse
 import core.config
 from core.config import xsschecker
 
+import time
+from datetime import timedelta
+
+import json
+from datetime import datetime
 
 def converter(data: Any, url: bool = False) -> Any:
     if 'str' in str(type(data)):
@@ -275,3 +280,39 @@ def escaped(position, string):
             return True
     else:
         return False
+
+
+class ETACalculator:
+    def init(self, total_items):
+        self.total_items = total_items
+        self.processed_items = 0
+        self.start_time = time.time()
+        self.avg_time = 0
+    
+    def update(self):
+        self.processed_items += 1
+        elapsed = time.time() - self.start_time
+        self.avg_time = elapsed / self.processed_items
+        
+        remaining_items = self.total_items - self.processed_items
+        remaining_seconds = remaining_items * self.avg_time
+        self.eta = timedelta(seconds=int(remaining_seconds))
+        
+        return str(self.eta)
+    
+    def get_progress_percent(self):
+        return (self.processed_items / self.total_items) * 100
+
+    
+
+def save_results_to_json(results, filename=None):
+    """Save scan results to a JSON file."""
+    if filename is None:
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"scan_results_{timestamp}.json"
+    
+    with open(filename, 'w', encoding='utf-8') as f:
+        json.dump(results, f, indent=4, ensure_ascii=False)
+    
+    print(f"[+] Results saved to {filename}")
+    return filename
