@@ -1,5 +1,6 @@
 from core.config import xsschecker
 from core.requester import requester
+from typing import Dict, List, Callable
 from core.utils import replaceValue, fillHoles
 from core.log import setup_logger
 

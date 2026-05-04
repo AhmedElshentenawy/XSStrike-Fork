@@ -1,0 +1,9 @@
+{
+    "target": "http://testphp.vulnweb.com/listproducts.php?cat=1",
+    "timestamp": "2026-05-03 00:40:14.179199",
+    "parameters": [
+        "cat"
+    ],
+    "total_payloads_tested": 0,
+    "vulnerabilities": []
+}

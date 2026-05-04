@@ -26,10 +26,19 @@ This repository is a fork of the original `xsstrike` project. It preserves the c
 - Reflected XSS scanning
 - DOM XSS scanning
 - Multi-threaded crawling
-- Context-aware payload generation
-- Handmade HTML and JavaScript parsers
-- WAF detection and evasion support
-- Outdated JS library scanning
+- Context analysis
+- Configurable core
+- WAF detection & evasion
+- Outdated JS lib scanning
+- Intelligent payload generator
+- Handmade HTML & JavaScript parser.om/s0md3v/XSStrike/wiki/Compatibility-&-Dependencies)
+- *Estimated Time of Arrival (ETA)
+- *Export results to JSON
+- Handmade HTML & JavaScript parser
+- Powerful fuzzing engine
+- Blind XSS support
+- Highly researched work-flow
+- Complete HTTP support
 - Bruteforce payloads from a file
 - Blind XSS support
 - Parameter discovery and hidden inputs
